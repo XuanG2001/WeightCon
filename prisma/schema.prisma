@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Meal {
+  id              Int      @id @default(autoincrement())
+  dateTime        DateTime
+  mealType        String   // breakfast/lunch/dinner/snack
+  descriptionText String
+  photoPaths      String   @default("[]") // JSON array stored as string
+  aiSummary       String   @default("")
+  caloriesMin     Float    @default(0)
+  caloriesMax     Float    @default(0)
+  caloriesMid     Float    @default(0)
+  proteinMin      Float    @default(0)
+  proteinMax      Float    @default(0)
+  proteinMid      Float    @default(0)
+  carbsMin        Float    @default(0)
+  carbsMax        Float    @default(0)
+  carbsMid        Float    @default(0)
+  fatMin          Float    @default(0)
+  fatMax          Float    @default(0)
+  fatMid          Float    @default(0)
+  confidence      String   @default("medium") // high/medium/low
+  portionAdjust   String   @default("normal")  // small/normal/large
+  oilAdjust       String   @default("unknown") // light/normal/oily/unknown
+  notes           String   @default("[]") // JSON array stored as string
+  isFrequent      Boolean  @default(false)
+  revisedFromMealId Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+}
+
+model Workout {
+  id          Int      @id @default(autoincrement())
+  dateTime    DateTime
+  type        String   // run/walk/ride/swim/strength/other
+  durationMin Float?
+  intensity   String?  // low/medium/high
+  calories    Float
+  source      String   @default("estimate") // estimate/manual/watch
+  note        String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+}
+
+model WeightEntry {
+  id           Int      @id @default(autoincrement())
+  date         DateTime @unique
+  weightKg     Float
+  weightJinRaw Float?
+  isPeriod     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}
+
+model Settings {
+  id                    Int      @id @default(1)
+  isSetup               Boolean  @default(false)
+  startWeightKg         Float    @default(70)
+  currentWeightKg       Float    @default(70)
+  targetWeightKg        Float    @default(60)
+  targetDate            DateTime @default(now())
+  targetCalories        Float    @default(1500)
+  heightCm              Float    @default(165)
+  gender                String   @default("prefer_not_to_say") // male/female/prefer_not_to_say
+  ageYears              Int      @default(25)
+  activityLevel         String   @default("moderate") // sedentary/light/moderate/active/very_active
+  weeklyGoalKg          Float    @default(0.5)
+  weighInReminderDays   Int      @default(3)
+  noMealReminderTime    String   @default("21:00")
+  includeWorkoutInBudget Boolean @default(true)
+  unitPreference        String   @default("kg") // kg/jin
+  updatedAt             DateTime @updatedAt
+}
+
