@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { callTextModel, parseJsonFromLLM } from "@/lib/ai";
+import { callTextModel } from "@/lib/ai";
 
 // ─── POST /api/plan/weekly-adjust ─────────────────────────────────────────
 
@@ -47,8 +47,10 @@ export async function POST(req: NextRequest) {
             : 0;
 
         // Estimate average daily net intake
-        const totalCalIn = meals.reduce((s, m) => s + m.caloriesMid, 0);
-        const totalCalOut = workouts.reduce((s, w) => s + w.calories, 0);
+        let totalCalIn = 0;
+        for (const m of meals) totalCalIn += m.caloriesMid;
+        let totalCalOut = 0;
+        for (const w of workouts) totalCalOut += w.calories;
         const days = Math.max(1, actualWeightChangeDays);
         const avgDailyNetIntake = (totalCalIn - totalCalOut) / days;
         const avgDailyDeficit = settings.targetCalories - avgDailyNetIntake;

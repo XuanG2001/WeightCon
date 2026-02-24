@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
     const dateStr = searchParams.get("date") ?? new Date().toISOString().slice(0, 10);
 
     try {
-        // Fetch today's meals and workouts
         const start = new Date(dateStr);
         start.setHours(0, 0, 0, 0);
         const end = new Date(dateStr);
@@ -22,9 +21,10 @@ export async function GET(req: NextRequest) {
             db.settings.findUnique({ where: { id: 1 } }),
         ]);
 
-        const totalCalIn = meals.reduce((s, m) => s + m.caloriesMid, 0);
-        const totalProtein = meals.reduce((s, m) => s + m.proteinMid, 0);
-        const totalCalOut = workouts.reduce((s, w) => s + w.calories, 0);
+        let totalCalIn = 0, totalProtein = 0, totalCalOut = 0;
+        for (const m of meals) { totalCalIn += m.caloriesMid; totalProtein += m.proteinMid; }
+        for (const w of workouts) { totalCalOut += w.calories; }
+
         const budget = settings?.targetCalories ?? 1500;
         const balance = budget - totalCalIn + (settings?.includeWorkoutInBudget ? totalCalOut : 0);
 
